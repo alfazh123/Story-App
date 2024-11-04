@@ -2,6 +2,7 @@ package com.dicoding.picodiploma.loginwithanimation.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.remote.response.AddNewStoryResponse
@@ -10,6 +11,7 @@ import com.dicoding.picodiploma.loginwithanimation.data.remote.response.GetDetai
 import com.dicoding.picodiploma.loginwithanimation.data.remote.response.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.data.remote.retrofit.ApiService
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -17,6 +19,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.File
+import java.io.IOException
+import java.net.SocketTimeoutException
 
 class UserRepository private constructor(
     private val apiService: ApiService,
@@ -71,6 +75,8 @@ class UserRepository private constructor(
     }
 
     private val resultAddStory = MutableLiveData<Result<AddNewStoryResponse>>()
+
+    // Add story without coroutine
 
     suspend fun addStory(imageFile: File, description: String) : LiveData<Result<AddNewStoryResponse>> {
         resultAddStory.value = Result.Loading
