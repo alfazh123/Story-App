@@ -103,6 +103,30 @@ class UserRepository private constructor(
         return resultAddStory
     }
 
+    // Add Story using coroutine
+
+    fun addNewStory(imageFile: File, description: String)= liveData(Dispatchers.IO){
+        emit(Result.Loading)
+
+        try {
+            val requestBody = description.toRequestBody("text/plain".toMediaType())
+            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+            val multipartBody = MultipartBody.Part.createFormData(
+                "photo",
+                imageFile.name,
+                requestImageFile
+            )
+            val successResponse = apiService.addStory(multipartBody, requestBody)
+            emit(Result.Success(successResponse))
+        } catch (e: HttpException) {
+            emit(Result.Error(e.message.toString()))
+        } catch (e: IOException) {
+            emit(Result.Error(e.message.toString()))
+        } catch (e: SocketTimeoutException) {
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
     companion object {
         fun getInstance(
             apiService: ApiService,

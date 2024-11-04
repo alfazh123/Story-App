@@ -16,7 +16,14 @@ class LoginViewModel(private val repository: AuthRepository) : ViewModel() {
 
     val error: LiveData<Boolean> = repository.error
 
+
+    // with out coroutine
     suspend fun register(name: String, email: String, password: String) = repository.register(name, email, password)
 
     suspend fun login(email: String, password: String) = repository.login(email, password)
+
+    // with coroutine
+    fun loginUser(email: String, password: String) = repository.loginUser(email, password)
+
+    fun registerUser(name: String, email: String, password: String) = repository.registerUser(name, email, password)
 }

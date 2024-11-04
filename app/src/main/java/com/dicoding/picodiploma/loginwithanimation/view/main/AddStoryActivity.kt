@@ -113,15 +113,42 @@ class AddStoryActivity : AppCompatActivity() {
                 binding.edtDescription.error = getString(R.string.error_description_empty)
                 return
             } else {
-                lifecycleScope.launch {
-                    viewModel.addStory(imageFile, description).observe(this@AddStoryActivity) { result ->
-                        when(result) {
+//                lifecycleScope.launch {
+//                    viewModel.addStory(imageFile, description).observe(this@AddStoryActivity) { result ->
+//                        when(result) {
+//                            is Result.Loading -> {
+//                                isLoading(true)
+//                            }
+//                            is Result.Error -> {
+//                                isLoading(false)
+//                                AlertDialog.Builder(this@AddStoryActivity).apply {
+//                                    setTitle("Error")
+//                                    setMessage("Failed Add Story : ${result.error}")
+//                                    setPositiveButton("OK") { _, _ -> }
+//                                    create()
+//                                    show()
+//                                }
+//                            }
+//                            is Result.Success -> {
+//                                isLoading(false)
+//                                val intent = Intent(this@AddStoryActivity, MainActivity::class.java)
+//                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//                                startActivity(intent)
+//                                Toast.makeText(this@AddStoryActivity, "Add Story Success", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    }
+//                }
+
+                // with coroutine
+                viewModel.addNewStory(imageFile, description).observe(this) { result ->
+                    when(result) {
                             is Result.Loading -> {
                                 isLoading(true)
                             }
                             is Result.Error -> {
                                 isLoading(false)
-                                AlertDialog.Builder(this@AddStoryActivity).apply {
+                                AlertDialog.Builder(this).apply {
                                     setTitle("Error")
                                     setMessage("Failed Add Story : ${result.error}")
                                     setPositiveButton("OK") { _, _ -> }
@@ -131,13 +158,12 @@ class AddStoryActivity : AppCompatActivity() {
                             }
                             is Result.Success -> {
                                 isLoading(false)
-                                val intent = Intent(this@AddStoryActivity, MainActivity::class.java)
+                                val intent = Intent(this, MainActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                                 startActivity(intent)
-                                Toast.makeText(this@AddStoryActivity, "Add Story Success", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Add Story Success", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    }
                 }
             }
         }

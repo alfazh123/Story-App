@@ -13,13 +13,11 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.dicoding.picodiploma.loginwithanimation.data.Result
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivitySignupBinding
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.login.LoginViewModel
 import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
-import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
@@ -59,9 +57,44 @@ class SignupActivity : AppCompatActivity() {
             val name = binding.edRegisterName.text.toString()
 
             isLoading(true)
-            lifecycleScope.launch {
-                viewmodel.register(name, email, password).observe(this@SignupActivity) { result ->
-                    when (result) {
+//            lifecycleScope.launch {
+//                viewmodel.register(name, email, password).observe(this@SignupActivity) { result ->
+//                    when (result) {
+//                        is Result.Loading -> {
+//                            isLoading(true)
+//                            Log.d("SignupActivity", "Loading")
+//                        }
+//                        is Result.Success -> {
+//                            isLoading(false)
+//                            Log.d("SignupActivity", "Success")
+//                            Toast.makeText(this@SignupActivity, "Account $name Created", Toast.LENGTH_SHORT).show()
+//                            val intent = Intent(this@SignupActivity, WelcomeActivity::class.java)
+//                            startActivity(intent)
+//                        }
+//                        is Result.Error -> {
+//                            isLoading(false)
+//                            Log.d("SignupActivity", "Error")
+//                            AlertDialog.Builder(this@SignupActivity).apply {
+//                                setTitle("Error")
+//                                setMessage("Registration failed : ${result.error}")
+//                                setPositiveButton("OK") { _, _ -> }
+//                                create()
+//                                show()
+//                            }
+//
+//                            with(binding) {
+//                                edRegisterName.setText("")
+//                                edRegisterEmail.setText("")
+//                                edRegisterPassword.setText("")
+//                            }
+//                        }
+//                    }
+//                }
+
+            // with coroutine
+
+            viewmodel.registerUser(name, email, password).observe(this) { result ->
+                when (result) {
                         is Result.Loading -> {
                             isLoading(true)
                             Log.d("SignupActivity", "Loading")
@@ -69,14 +102,14 @@ class SignupActivity : AppCompatActivity() {
                         is Result.Success -> {
                             isLoading(false)
                             Log.d("SignupActivity", "Success")
-                            Toast.makeText(this@SignupActivity, "Account $name Created", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@SignupActivity, WelcomeActivity::class.java)
+                            Toast.makeText(this, "Account $name Created", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, WelcomeActivity::class.java)
                             startActivity(intent)
                         }
                         is Result.Error -> {
                             isLoading(false)
                             Log.d("SignupActivity", "Error")
-                            AlertDialog.Builder(this@SignupActivity).apply {
+                            AlertDialog.Builder(this).apply {
                                 setTitle("Error")
                                 setMessage("Registration failed : ${result.error}")
                                 setPositiveButton("OK") { _, _ -> }
@@ -91,7 +124,6 @@ class SignupActivity : AppCompatActivity() {
                             }
                         }
                     }
-                }
             }
         }
     }
