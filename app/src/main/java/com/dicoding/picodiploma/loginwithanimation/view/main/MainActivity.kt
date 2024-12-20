@@ -23,6 +23,8 @@ import com.dicoding.picodiploma.loginwithanimation.view.welcome.WelcomeActivity
 import kotlinx.coroutines.launch
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModelFactory
 import com.dicoding.picodiploma.loginwithanimation.view.login.LoginViewModel
+import com.dicoding.picodiploma.loginwithanimation.view.maps.MapsActivity
+import com.dicoding.picodiploma.loginwithanimation.view.utils.LoadingStateAdapter
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,39 +62,28 @@ class MainActivity : AppCompatActivity() {
         val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding.rvStories.addItemDecoration(itemDecoration)
 
-        lifecycleScope.launch {
-            viewModel.getAllStories().observe(this@MainActivity) { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoading(true)
-                    }
-                    is Result.Error -> {
-                        isLoading(false)
-                        binding.textNameUser.text = result.error
-                        Toast.makeText(this@MainActivity, result.error, Toast.LENGTH_SHORT).show()
-                    }
-                    is Result.Success -> {
-                        isLoading(false)
-                        val adapter = ListStoriesAdapter()
-                        adapter.submitList(result.data.listStory)
-                        binding.rvStories.adapter = adapter
-
-                        adapter.setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickback {
-                            override fun onItemClicked(story: ListStoryItem) {
-                                val intent = Intent(this@MainActivity, DetailActivity::class.java)
-                                intent.putExtra(DetailActivity.EXTRA_ID, story.id)
-                                startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    this@MainActivity,
-                                    binding.rvStories,
-                                    "sharedElementsName"
-                                ).toBundle())
-
-                            }
-
-                        })
-                    }
+        viewModel.getStories().observe(this) { stories ->
+            val adapter = ListStoriesAdapter()
+            adapter.submitData(lifecycle, stories)
+            binding.rvStories.adapter = adapter.withLoadStateFooter(
+                footer = LoadingStateAdapter {
+                    adapter.retry()
                 }
-            }
+            )
+
+            adapter.setOnItemClickCallback(object : ListStoriesAdapter.OnItemClickback {
+                override fun onItemClicked(story: ListStoryItem) {
+                    val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                    intent.putExtra(DetailActivity.EXTRA_ID, story.id)
+                    startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        this@MainActivity,
+                        binding.rvStories,
+                        "sharedElementsName"
+                    ).toBundle())
+
+                }
+
+            })
         }
     }
 
@@ -115,23 +106,16 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_logout -> {
                 authViewModel.logout()
             }
+            R.id.menu_map -> {
+                startActivity(Intent(this, MapsActivity::class.java))
+            }
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    private fun isLoading(isloading: Boolean) {
-        if (isloading) {
-            binding.progressCircular.visibility = View.VISIBLE
-        } else {
-            binding.progressCircular.visibility = View.GONE
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch {
-            viewModel.getAllStories()
-        }
+        viewModel.getStories()
     }
 }

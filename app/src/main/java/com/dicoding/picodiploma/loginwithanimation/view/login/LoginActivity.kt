@@ -12,10 +12,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.dicoding.picodiploma.loginwithanimation.data.Result
 import com.dicoding.picodiploma.loginwithanimation.databinding.ActivityLoginBinding
 import com.dicoding.picodiploma.loginwithanimation.view.main.MainActivity
 import com.dicoding.picodiploma.loginwithanimation.view.AuthViewModelFactory
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
     private val viewModel by viewModels<LoginViewModel> {
@@ -54,62 +56,62 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.edLoginPassword.text.toString()
             isLoading(true)
 
-//            lifecycleScope.launch {
-//                viewModel.login(email, password).observe(this@LoginActivity) { result ->
-//                    when (result) {
-//                        is Result.Loading -> {
-//                            isLoading(true)
-//                        }
-//                        is Result.Error -> {
-//                            isLoading(false)
-//                            AlertDialog.Builder(this@LoginActivity).apply {
-//                                setTitle("Error")
-//                                setMessage(result.error)
-//                                setPositiveButton("OK") { _, _ -> }
-//                                create()
-//                                show()
-//                            }
-//                            Toast.makeText(this@LoginActivity, "Login Failed", Toast.LENGTH_SHORT).show()
-//                        }
-//                        is Result.Success -> {
-//                            isLoading(false)
-//                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-//                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-//                            startActivity(intent)
-//                            finish()
-//                            Toast.makeText(this@LoginActivity, "Welcome ${result.data.loginResult.name}", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
-//            }
-
-            // with coroutine
-            viewModel.loginUser(email, password).observe(this) { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoading(true)
-                    }
-                    is Result.Error -> {
-                        isLoading(false)
-                        AlertDialog.Builder(this).apply {
-                            setTitle("Error")
-                            setMessage(result.error)
-                            setPositiveButton("OK") { _, _ -> }
-                            create()
-                            show()
+            lifecycleScope.launch {
+                viewModel.login(email, password).observe(this@LoginActivity) { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoading(true)
                         }
-                        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
-                    }
-                    is Result.Success -> {
-                        isLoading(false)
-                        val intent = Intent(this, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        finish()
-                        Toast.makeText(this, "Welcome ${result.data.loginResult.name}", Toast.LENGTH_SHORT).show()
+                        is Result.Error -> {
+                            isLoading(false)
+                            AlertDialog.Builder(this@LoginActivity).apply {
+                                setTitle("Error")
+                                setMessage(result.error)
+                                setPositiveButton("OK") { _, _ -> }
+                                create()
+                                show()
+                            }
+                            Toast.makeText(this@LoginActivity, "Login Failed", Toast.LENGTH_SHORT).show()
+                        }
+                        is Result.Success -> {
+                            isLoading(false)
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            finish()
+                            Toast.makeText(this@LoginActivity, "Welcome ${result.data.loginResult.name}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
+
+            // with coroutine
+//            viewModel.loginUser(email, password).observe(this) { result ->
+//                when (result) {
+//                    is Result.Loading -> {
+//                        isLoading(true)
+//                    }
+//                    is Result.Error -> {
+//                        isLoading(false)
+//                        AlertDialog.Builder(this).apply {
+//                            setTitle("Error")
+//                            setMessage(result.error)
+//                            setPositiveButton("OK") { _, _ -> }
+//                            create()
+//                            show()
+//                        }
+//                        Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
+//                    }
+//                    is Result.Success -> {
+//                        isLoading(false)
+//                        val intent = Intent(this, MainActivity::class.java)
+//                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//                        startActivity(intent)
+//                        finish()
+//                        Toast.makeText(this, "Welcome ${result.data.loginResult.name}", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//            }
         }
     }
 

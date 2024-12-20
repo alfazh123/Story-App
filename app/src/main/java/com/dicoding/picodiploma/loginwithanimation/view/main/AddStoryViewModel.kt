@@ -11,5 +11,5 @@ class AddStoryViewModel(private val repository: UserRepository): ViewModel() {
 
 
     //with coroutine
-    fun addNewStory(imageFile: File, description: String) = repository.addNewStory(imageFile, description)
+    fun addNewStory(imageFile: File, description: String, lat: Float?, long: Float?) = repository.addNewStory(imageFile, description, lat, long)
 }

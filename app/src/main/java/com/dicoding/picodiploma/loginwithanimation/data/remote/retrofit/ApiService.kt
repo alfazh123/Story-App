@@ -26,7 +26,11 @@ interface ApiService {
     ): LoginResponse
 
     @GET("stories")
-    suspend fun getStories(): GetAllStoriesResponse
+    suspend fun getStories(
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20,
+        @Query("location") location: Int? = 1
+    ): GetAllStoriesResponse
 
     @GET("stories/{id}")
     suspend fun getStorybyId(
@@ -37,6 +41,8 @@ interface ApiService {
     @POST("stories")
     suspend fun addStory(
         @Part file: MultipartBody.Part,
-        @Part("description") description: RequestBody
+        @Part("description") description: RequestBody,
+        @Part("lat") lat: Float? = null,
+        @Part("lon") long: Float? = null
     ) : AddNewStoryResponse
 }

@@ -3,6 +3,7 @@ package com.dicoding.picodiploma.loginwithanimation.view.utils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.dicoding.picodiploma.loginwithanimation.R
 import com.dicoding.picodiploma.loginwithanimation.data.remote.response.ListStoryItem
 import com.dicoding.picodiploma.loginwithanimation.databinding.ListStoriesBinding
 
-class ListStoriesAdapter: ListAdapter<ListStoryItem, ListStoriesAdapter.StoryViewHolder>(DIFF_CALLBACK) {
+class ListStoriesAdapter: PagingDataAdapter<ListStoryItem, ListStoriesAdapter.StoryViewHolder>(DIFF_CALLBACK) {
 
     private lateinit var onStoryClickCallback: OnItemClickback
 
@@ -24,7 +25,7 @@ class ListStoriesAdapter: ListAdapter<ListStoryItem, ListStoriesAdapter.StoryVie
     }
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
                 return oldItem.id == newItem.id
             }
@@ -60,10 +61,11 @@ class ListStoriesAdapter: ListAdapter<ListStoryItem, ListStoriesAdapter.StoryVie
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val item = getItem(position)
+        holder.bind(item!!)
 
         holder.itemView.setOnClickListener {
-            onStoryClickCallback.onItemClicked(getItem(position))
+            onStoryClickCallback.onItemClicked(item)
         }
     }
 }

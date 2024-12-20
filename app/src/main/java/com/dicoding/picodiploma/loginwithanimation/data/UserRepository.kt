@@ -3,6 +3,10 @@ package com.dicoding.picodiploma.loginwithanimation.data
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.liveData
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserModel
 import com.dicoding.picodiploma.loginwithanimation.data.pref.UserPreference
 import com.dicoding.picodiploma.loginwithanimation.data.remote.response.AddNewStoryResponse
@@ -33,25 +37,13 @@ class UserRepository private constructor(
         return userPreference.getSession()
     }
 
-    private val resultAllStories = MutableLiveData<Result<GetAllStoriesResponse>>()
-
-    suspend fun getAllStories() : LiveData<Result<GetAllStoriesResponse>> {
-        resultAllStories.value = Result.Loading
-        try {
-            resultAllStories.value = Result.Loading
-            val response = apiService.getStories()
-            resultAllStories.value = Result.Success(response)
-            _error.value = false
-            resultAllStories.postValue(Result.Success(response))
-        } catch (e: HttpException) {
-            val jsonInString = e.response()?.errorBody()?.string()
-            val errorBody = Gson().fromJson(jsonInString, GetAllStoriesResponse::class.java)
-            val errorMessage = errorBody.message
-            resultAllStories.value = Result.Error(errorMessage)
-            _error.value = true
-        }
-
-        return resultAllStories
+    fun getAllStories() : LiveData<PagingData<ListStoryItem>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 5
+            ),
+            pagingSourceFactory = { StoryPagingSource(apiService) }
+        ).liveData
     }
 
     private val resultDetail = MutableLiveData<Result<GetDetailStoriesResponse>>()
@@ -77,6 +69,27 @@ class UserRepository private constructor(
     private val resultAddStory = MutableLiveData<Result<AddNewStoryResponse>>()
 
     // Add story without coroutine
+
+    private val resultLocationsStories = MutableLiveData<Result<GetAllStoriesResponse>>()
+
+    suspend fun getLocationsStories(): LiveData<Result<GetAllStoriesResponse>> {
+        resultLocationsStories.value = Result.Loading
+
+        try {
+            val response = apiService.getStories()
+            resultLocationsStories.value = Result.Success(response)
+            _error.value = false
+            resultLocationsStories.postValue(Result.Success(response))
+        } catch (e: HttpException) {
+            val jsonInString = e.response()?.errorBody()?.string()
+            val errorBody = Gson().fromJson(jsonInString, GetAllStoriesResponse::class.java)
+            val errorMessage = errorBody.message
+            resultLocationsStories.value = Result.Error(errorMessage)
+            _error.value = true
+        }
+
+        return resultLocationsStories
+    }
 
     suspend fun addStory(imageFile: File, description: String) : LiveData<Result<AddNewStoryResponse>> {
         resultAddStory.value = Result.Loading
@@ -105,7 +118,7 @@ class UserRepository private constructor(
 
     // Add Story using coroutine
 
-    fun addNewStory(imageFile: File, description: String)= liveData(Dispatchers.IO){
+    fun addNewStory(imageFile: File, description: String, lat: Float?, long: Float?)= liveData(Dispatchers.IO){
         emit(Result.Loading)
 
         try {
@@ -116,7 +129,7 @@ class UserRepository private constructor(
                 imageFile.name,
                 requestImageFile
             )
-            val successResponse = apiService.addStory(multipartBody, requestBody)
+            val successResponse = apiService.addStory(multipartBody, requestBody, lat, long)
             emit(Result.Success(successResponse))
         } catch (e: HttpException) {
             emit(Result.Error(e.message.toString()))

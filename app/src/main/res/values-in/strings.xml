@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Story App</string>
+    <string name="signup">Daftar</string>
+    <string name="login">Masuk</string>
+    <string name="message_welcome_page">Mau belajar Android, iOS, Machine Learning, Cloud, Front-End, Back-End, dan bidang IT lainnya? Di Dicoding aja!</string>
+    <string name="title_welcome_page">Selamat datang di Dicoding!</string>
+    <string name="title_signup_page">Lengkapi data dirimu di bawah ini ya</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="message_login_page">Masukkan dulu datamu ya</string>
+    <string name="title_login_page">Sudah siap untuk upgrade skill?</string>
+    <string name="name">Nama</string>
+    <string name="message_main_page">Selamat Belajar di Dicoding.</string>
+    <string name="greeting">Halo %1$s,</string>
+    <string name="logout">Keluar</string>
+    <string name="story_app">Story App</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="menu_setting_language">Menu Pengaturan Bahasa</string>
+    <string name="menu_logout">Logout</string>
+    <string name="add_story">Tambah Cerita</string>
+    <string name="upload_story">Unggah Cerita</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Kamera</string>
+    <string name="photo">photo</string>
+    <string name="error_description_empty">Description must not be empty</string>
+    <string name="login_image">login image</string>
+    <string name="signup_image">signup iamge</string>
+    <string name="welcome_image">welcome image</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="map">Peta</string>
+    <string name="retry">Coba lagi</string>
+    <string name="location">Lokasi</string>
+</resources>

@@ -26,12 +26,6 @@
             app:layout_anchor="@+id/progress_circular"
             app:layout_anchorGravity="start|top" />
 
-        <ProgressBar
-            android:id="@+id/progress_circular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"/>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_stories"
             android:layout_width="match_parent"
